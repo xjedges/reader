@@ -1,0 +1,21 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+img {
+  border: 0;
+  vertical-align: top;
+}
+ul,
+li {
+  list-style-type: none;
+}
+button,
+a {
+  cursor: pointer;
+}
+i,
+em,
+cite {
+  font-style: normal;
+}

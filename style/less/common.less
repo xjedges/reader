@@ -1,0 +1,130 @@
+*{margin:0; padding:0;}
+img{border:0; vertical-align:top;}
+ul,li{list-style-type:none;}
+button,a{cursor:pointer;}
+i,em,cite{font-style: normal;}
+
+@bgColor:#eee;
+@grey:#aaa;
+@grey1:#e3e3e3;
+@grey2:#636875;
+@golden:#6b503a;
+@highlight:#4a8bd6;
+@blue:#73c5f8;
+@light-blue:#b9e3ff;
+@green:#73c5c8;
+@yellow:#ff9;
+@red:#FF4D4D;
+@white:#fff;
+
+@auto:auto;
+
+.userSelect(@arguments){
+	-webkit-user-select:@arguments;
+	-moz-user-select:@arguments;
+}
+.scrollbar(@color:@grey,@size:6px){
+	&::-webkit-scrollbar{width:@size !important; height:@size !important; background:transparent !important;}
+	&::-webkit-scrollbar-thumb{background:@color !important; border-radius:@size/2 !important; }
+	&::-webkit-scrollbar-corner{display:none !important;}
+}
+.sideButton(@text,@bg,@W,@H,@textSize,@top,@color){
+	position:absolute; top:@top+10; right:(-@W)-10;
+	width:@H; height:@W;
+	text-align:center; line-height:@H; color:@white;
+	background:@bg;
+	box-shadow:5px -5px 5px rgba(0,0,0,.2);
+	cursor:pointer;
+	border-top-right-radius:8px;
+	overflow: hidden;
+	.userSelect(none);
+	-moz-transform:rotate(90deg);
+	-moz-transform-origin:50% 50%;
+	-webkit-transform:rotate(90deg);
+	-webkit-transform-origin:50% 50%;
+	&:before{
+		content:"";
+		position:absolute; top:-@W; left:-@H; width:@H*2; height:@W*2;
+		background: -moz-radial-gradient(ellipse closest-side, @grey1, rgba(255,255,255,0));
+		background: -webkit-radial-gradient(ellipse closest-side, @grey1, rgba(255,255,255,0));
+		box-shadow:inset 5px -5px 5px rgba(0,0,0,.1);
+	}
+	&:hover:before{
+		background: -moz-radial-gradient(ellipse closest-side, @yellow, rgba(255,255,255,0));
+		background: -webkit-radial-gradient(ellipse closest-side, @yellow, rgba(255,255,255,0));
+	}
+	
+	&:after{
+		position:absolute;
+		top:0;left:0;
+		width:100%;
+		content:@text;
+		color:@white;
+		// font-family:Skia,sans-serif;
+		line-height:@W;
+		text-align:center;
+		font-size:@textSize;
+		text-shadow:1px -1px 1px @grey;
+	}
+}
+.button(@color:@blue,@W:38px,@H:38px,@textSize:16px,@round:5px){
+	cursor:pointer;
+	display:inline-block;
+	height:@H;
+	line-height:@H;
+	text-align:center;
+	width:@W;
+	border-radius:@round;
+	background:@color;
+	border:1px solid darken(@color,10%);
+	box-shadow:inset 0 0 5px lighten(@color,10%);
+	color:darken(@color,40%);
+	font-size:@textSize;
+	text-shadow:1px 1px 0px lighten(@color,20%);
+	overflow: hidden;
+	.userSelect(none);
+	&:hover{
+		// background:darken(@color,5%);
+		box-shadow:0 0 5px darken(@color,20%);
+	}
+}
+.ellipsis(@width){
+	display:inline-block;
+	max-width:@width;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+	overflow:hidden;
+}
+.circleButton(@color:@blue,@radius:16px){
+	display:inline-block;
+	width:@radius;
+	height:@radius;
+	border-radius:@radius/2;
+	background:@color;
+	text-align:center;
+	line-height:@radius;
+	color:lighten(@color,40%);
+	.userSelect(none);
+}
+
+.transition(@attribute:all,@time:0.5,@effect:ease){
+	-webkit-transition: @arguments;
+	-moz-transition: @arguments;
+}
+.subWindow(){
+	position:absolute;
+	height:100%;
+	left:0;
+	background:@white;
+	height:100%; 
+	max-width:500px !important;
+	.transition(all,0.3s);
+	&.show{
+		left:500px;
+		box-shadow:5px 0 5px rgba(0,0,0,.2);
+		max-width:2000px !important;
+	}
+	&.show.max{
+		left:40px;
+	}
+}
