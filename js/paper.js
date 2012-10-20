@@ -132,11 +132,11 @@ function main(){
         function Papers(){
             var self=$("div",{id:"papers"})
             var step=50
+            var angle=45
+            var posZ=0
+            var L,D,H
             self.step
             self.pos
-            var L
-            var D
-            var angle=45
             
             window.onkeyup=function(e){
                 switch(e.keyCode){
@@ -146,18 +146,21 @@ function main(){
                             step+=3
                             self.update()
                         }
+                        break;
                     case 37://Right
                         if(angle>3){
                             angle-=3
                             step-=3
                             self.update()
                         }
+                        break;
                     case 38://UP
                         function update1(){
                             if(angle<81){
                                 var timeout=setTimeout(function(){
                                     angle+=3
                                     step+=3
+                                    posZ+=30
                                     self.update()
                                     update1()
                                 },50)
@@ -166,7 +169,6 @@ function main(){
                         update1()
                         break;
                     case 40://DOWN
-
                         function update2(){
                             if(angle>0){
                                 var timeout=setTimeout(function(){
@@ -204,17 +206,17 @@ function main(){
                 if(s==null){
                     self.pos=-self.step
                     D=step/2
+                    L=self.width()
+                    H=Math.sqrt(L*L-D*D)
                 }
                
-                var pos_step=s!=null?s:0
-                self.pos+=pos_step
+                self.pos+=s!=null?s:0
 
                 var paperArr=[]
                 var pointGroup=[]
-                var shadowPoint=new Array(Math.ceil(papers.child().length/2)*2+1)
+                var shadowPoint=new Array(Math.ceil(self.child().length/2)*2+1)
                 var isLeft=true
-                L=self.width()
-                var H=Math.sqrt(L*L-D*D)
+
                 var H1=H*angle_sin
                 var H2=H/angle_cos
 
@@ -232,60 +234,58 @@ function main(){
                     var y1=paperArr[i][1];
                     var x2=paperArr[i+1][0];
                     var y2=paperArr[i+1][1];
+                    var x0=(x1+x2)/2
+                    var y0=(y1+y2)/2
                     var x,y
+
                     if(x1<0 && x2<0){
-                        x=(x1+x2)/2-H1
+                        x=x0-H1
                         y=angle_tan*Math.abs(x)-H2
-                        // DD(x,y)
                     }else if(x1>0 && x2>0){
-                        x=(x1+x2)/2+H1
+                        x=x0+H1
                         y=angle_tan*Math.abs(x)-H2
-                        // DD(x,y)
-
+                    }else if(y2==y1){
+                        x=0
+                        y=-(H-self.step)
                     }else{
-                        if(y2==y1){
-                            x=0
-                            y=-(H-self.step)
-                        }
-                        else{
-                            var x0=(x1+x2)/2
-                            var y0=(y1+y2)/2
-                            var r=-(y2-y1)/(x2-x1)
-                            var r2=r*r
-                            var M=x0-r*y0+r*y1
-                            var A=(r2+1)/r2
-                            var B=2*M/r2+2*x1
-                            var C=M*M/r2-L*L+x1*x1
+                        var r=-(y2-y1)/(x2-x1)
+                        var r2=r*r
+                        var M=x0-r*y0+r*y1
+                        var A=(r2+1)/r2
+                        var B=2*M/r2+2*x1
+                        var C=M*M/r2-L*L+x1*x1
 
-                            if(y2<y1){
-                                x=(B-Math.sqrt(B*B-4*A*C))/2/A
-                            }else{
-                                x=(B+Math.sqrt(B*B-4*A*C))/2/A
-                            }
-                            y=x/r-x0/r+y0
+                        if(y2<y1){
+                            x=(B-Math.sqrt(B*B-4*A*C))/2/A
+                        }else{
+                            x=(B+Math.sqrt(B*B-4*A*C))/2/A
                         }
+                        y=x/r-x0/r+y0
                     }
+
                     pointGroup.push([x,y])
 
                     var paper1=self.child(2*i)
                     var paper2=self.child(2*i+1)
                     
-                    var angle1=Math.atan((y-y1)/(x-x1))
-                    var angle2=Math.atan((y-y2)/(x-x2))
-                    if(angle1>0.16){
-                        paper1.addClass("hide")
-                    }else{
-                        paper1.removeClass("hide")
-                        paper1.css({"-webkit-transform":"translateX("+((x+x1)/2)+"px) translateZ("+(-(y+y1)/2)+"px) rotateY("+angle1+"rad)"})
-                        paper1.shadow.css({opacity:Math.abs(angle2)*0.3});
+                    if(paper1){
+                        var angle1=Math.atan((y-y1)/(x-x1))
+                        if(angle1>0.16){
+                            paper1.addClass("hide")
+                        }else{
+                            paper1.removeClass("hide")
+                            paper1.css({"-webkit-transform":"translateX("+((x+x1)/2)+"px) translateZ("+(-(y+y1)/2+posZ)+"px) rotateY("+angle1+"rad)"})
+                            paper1.shadow.css({opacity:Math.abs(angle1)*0.3});
+                        }
                     }
                     
                     if(paper2){
+                        var angle2=Math.atan((y-y2)/(x-x2))
                         if(angle2<-0.16){
                             paper2.addClass("hide")
                         }else{
                             paper2.removeClass("hide")
-                            paper2.css({"-webkit-transform":"translateX("+((x+x2)/2)+"px) translateZ("+(-(y+y2)/2)+"px) rotateY("+angle2+"rad)"})
+                            paper2.css({"-webkit-transform":"translateX("+((x+x2)/2)+"px) translateZ("+(-(y+y2)/2+posZ)+"px) rotateY("+angle2+"rad)"})
                             paper2.shadow.css({opacity:Math.abs(angle2)*0.3});
                         }
                     }
