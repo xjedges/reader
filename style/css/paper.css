@@ -34,9 +34,9 @@ body {
 }
 #shadow svg {
   top: 0;
-  left: -250;
+  left: -385;
   position: absolute;
-  width: 810;
+  width: 1080;
   height: 720;
 }
 #btnPrev {
@@ -79,6 +79,7 @@ body {
   margin: 10;
   width: 270;
   height: 360;
+  display: none;
 }
 .paper.hide {
   display: none;

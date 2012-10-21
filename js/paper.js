@@ -1,4 +1,4 @@
-debug({W:300,H:300});
+debug(1,{W:500,H:300});
 window.onload=main;
 function SVG(tag,attr){
     var self={};
@@ -28,7 +28,7 @@ function main(){
     var info=$("span")
     var feedView=FeedView()
     body.append(feedView,info)
-    feedView.setData({items:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]})
+    feedView.setData({items:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]})
     function FeedView(){
         var self=$("div",{cls:"feedView"})
         var size=300
@@ -106,14 +106,14 @@ function main(){
         function Shadow(){
             var self=$("div",{id:"shadow"})
             var polygon=SVG("polygon",{fill:"#cccccc"})
-            var offsetX=428
-            var offsetY=440
-            var perspective=1400
+            var offsetX=570
+            var offsetY=250
+            var perspective=2000
             self.append(
                 SVG("svg").append(
                     SVG("defs").append(
                         SVG("filter",{id:"Gaussian_Blur"}).append(
-                            SVG("feGaussianBlur",{in:"SourceGraphic",stdDeviation:"5"})
+                            SVG("feGaussianBlur",{in:"SourceGraphic",stdDeviation:"6"})
                         )
                     ),
                     polygon
@@ -123,7 +123,7 @@ function main(){
             self.update=function(arr){
                 var str=""
                 for(var i in arr){
-                    str+=Math.round(arr[i][0]*perspective/(perspective+arr[i][2])+offsetX)+","+Math.round(-arr[i][1]/3+offsetY)+" "
+                    str+=Math.round(arr[i][0]*perspective/(perspective+arr[i][2])+offsetX)+","+Math.round(-arr[i][1]/4+offsetY)+" "
                 }
                 polygon.set({points:str})
             }
@@ -214,8 +214,6 @@ function main(){
 
                 var paperArr=[]
                 var pointGroup=[]
-                var shadowPoint=new Array(Math.ceil(self.child().length/2)*2+1)
-                var isLeft=true
 
                 var H1=H*angle_sin
                 var H2=H/angle_cos
@@ -227,9 +225,14 @@ function main(){
                     X+=self.step
                 }
 
+                var points=[]
+                var shadowPoints=[]
+
                 for(var i=0;i<paperArr.length-1;i++){
 
-                    if(2*i+1>self.child().length) break;
+                    points.push(paperArr[i])
+                    if(i+1==paperArr.length-1) break;
+
                     var x1=paperArr[i][0];
                     var y1=paperArr[i][1];
                     var x2=paperArr[i+1][0];
@@ -254,26 +257,20 @@ function main(){
                         var A=(r2+1)/r2
                         var B=2*M/r2+2*x1
                         var C=M*M/r2-L*L+x1*x1
-
-                        if(y2<y1){
-                            x=(B-Math.sqrt(B*B-4*A*C))/2/A
-                        }else{
-                            x=(B+Math.sqrt(B*B-4*A*C))/2/A
-                        }
+                        x=(B+(y1>y2?-1:1) * Math.sqrt(B*B-4*A*C))/2/A
                         y=x/r-x0/r+y0
                     }
-
-                    pointGroup.push([x,y])
+                    points.push([x,y])
 
                     var paper1=self.child(2*i)
                     var paper2=self.child(2*i+1)
-                    
+
                     if(paper1){
                         var angle1=Math.atan((y-y1)/(x-x1))
                         if(angle1>0.16){
-                            paper1.addClass("hide")
+                            paper1.hide()
                         }else{
-                            paper1.removeClass("hide")
+                            paper1.show()
                             paper1.css({"-webkit-transform":"translateX("+((x+x1)/2)+"px) translateZ("+(-(y+y1)/2+posZ)+"px) rotateY("+angle1+"rad)"})
                             paper1.shadow.css({opacity:Math.abs(angle1)*0.3});
                         }
@@ -282,77 +279,61 @@ function main(){
                     if(paper2){
                         var angle2=Math.atan((y-y2)/(x-x2))
                         if(angle2<-0.16){
-                            paper2.addClass("hide")
+                            paper2.hide()
                         }else{
-                            paper2.removeClass("hide")
+                            paper2.show()
                             paper2.css({"-webkit-transform":"translateX("+((x+x2)/2)+"px) translateZ("+(-(y+y2)/2+posZ)+"px) rotateY("+angle2+"rad)"})
                             paper2.shadow.css({opacity:Math.abs(angle2)*0.3});
                         }
                     }
+                    
                 }
-                for(var i=0;i<pointGroup.length;i++){
-                    var p1=paperArr[i]
-                    var p2=paperArr[i+1]
-                    var c0=i>0?pointGroup[i-1]:null
-                    var c1=pointGroup[i]
-                    var c2=(i<pointGroup.length-1)?pointGroup[i+1]:null
-                    var dotX=0,dotY=0;
-
-                    if(c0==null){
-                        dotX=Math.min(c1[0],p1[0])
-                        dotY=1160
-                        shadowPoint[2*i]=[dotX,dotY,c1[1]]
-                    }else if(c2==null){
-                        dotX=Math.max(c1[0],p2[0])
-                        dotY=1160
-                        shadowPoint[2*i+1]=[c1[0],c1[1],c1[1]]
-                        shadowPoint[2*(i+1)]=[dotX,dotY,c1[1]]
-
-                        if(isLeft){
-                            shadowPoint[2*i]=[p1[0],p1[1],c1[1]]
-                            isLeft=false
-                        }
-                    }else if(isMiddle(c1,c0,p1)){
-                        var x1=c0[0]
-                        var y1=c0[1]
-                        var x2=p1[0]
-                        var y2=p1[1]
-                        var d=(y1-y2)/(x1-x2)
-                        dotX=c1[0]
-                        dotY=d*dotX+y1-d*x1
-
-                        shadowPoint[2*i]=[dotX,dotY,c1[1]]
-                    }else if(isMiddle(c1,c2,p2)){
-                        var x1=c2[0]
-                        var y1=c2[1]
-                        var x2=p2[0]
-                        var y2=p2[1]
-                        var d=(y1-y2)/(x1-x2)
-                        dotX=c1[0]
-                        dotY=d*dotX+y1-d*x1
-                        if(isLeft){
-                            shadowPoint[2*i]=[p1[0],p1[1],c1[1]]
-                            isLeft=false
-                        }
-                        shadowPoint[2*(i+1)]=[dotX,dotY,c1[1]]
-                    }else if(isMiddle(c1,p1,p2)){
-                        dotX=Math.max(c1[0],p2[0])
-                        dotY=p1[0]
-                        shadowPoint[2*i]=[p1[0],p1[1],c1[1]]
-                        shadowPoint[2*(i+1)]=[p2[0],p2[1],c1[1]]
+                
+                for(var i=0;i<points.length-2;i++){
+                    var p1=points[i]
+                    var p2=points[i+1]
+                    var p3=points[i+2]
+                    if(p3[0]>p1[0] && p1[0]>p2[0] && p2[0]>0){
+                        p=cast(p1,p2,p3)
+                        addPoint(p1)
+                        addPoint(p,p1[1])
+                    }else if(p2[0]>p3[0] && p3[0]>p1[0] && p2[0]<0){
+                        p=cast(p3,p2,p1)
+                        addPoint(p,p3[1])
+                        addPoint(p3)
+                    }else if(p3[0]>p2[0] && p2[0]>p1[0]){
+                        if(i==0)shadowPoints.push(p1);
+                        addPoint(p2)
+                        if(i==points.length-3)addPoint(p3);
+                    }else if(i==0 && p2[0]>p3[0] && p3[0]>p1[0]){
+                        addPoint(p1)
+                    }else if(i==points.length-3 && p3[0]>p1[0] && p1[0]>p2[0]){
+                        addPoint(p3)
+                    }else if(i==0 && p3[0]>p1[0] && p1[0]>p2[0]){
+                        addPoint(p2)
+                    }else if(i==points.length-3 && p2[0]>p3[0] && p3[0]>p1[0]){
+                        addPoint(p2)
                     }
-                    function isMiddle(p0,p1,p2){
-                        if(p1[0]>p2[0] && p1[0]>p0[0] && p2[0]<p0[0]){
-                            return true
-                        }else if(p1[0]<p2[0] && p1[0]<p0[0] && p2[0]>p0[0]){
-                            return true
-                        }
-                        return false
-                    }
-                    shadowPoint[2*i+1]=[c1[0],c1[1],c1[1]]
                 }
-                shadow.update(shadowPoint)
+                function cast(p1,p2,p3){
+                    var d=(p2[1]-p3[1])/(p2[0]-p3[0])
+                    return [p1[0],d*p1[0]+p2[1]-d*p2[0]]
+                }
+                function addPoint(point,z){
+                    shadowPoints.push([point[0],point[1],z?z:point[1]])
+                }
+
+                for(var i=0;i<shadowPoints.length;i++){
+                    shadowPoints[i][1]=700-shadowPoints[i][1]
+                }
+                var shadowPoints1=shadowPoints
+                for(var i=shadowPoints.length-1;i>=0;i--){
+                    shadowPoints1.push([shadowPoints[i][0],-shadowPoints[i][1],shadowPoints[i][2]])
+                }
+                shadow.update(shadowPoints1)
+                
             }
+
             return self
         }
         function Paper(data,length,code){

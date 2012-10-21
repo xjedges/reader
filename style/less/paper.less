@@ -34,7 +34,7 @@ body{background:#ddd; height:100%; overflow: hidden; font-size:16; font-family:"
 }
 #shadow{
 	svg{
-		@w:@W*3;
+		@w:@W*4;
 		@h:@H*2;
 		top:0;left:-(@w - @W)/2+20;
 		position:absolute;
@@ -62,6 +62,7 @@ body{background:#ddd; height:100%; overflow: hidden; font-size:16; font-family:"
 	padding:@Pad; margin:10; width:@W; height:@H;
 	// border:1 solid @grey;
 	@radius:10;
+	display:none;
 	&.hide{
 		display:none;
 	}
