@@ -45,30 +45,8 @@ function main(){
         window.onmousewheel=function(e){
             papers.update(-e.wheelDelta/120*5)
         }
-        btnPrev.onclick=function(){
-            var endPos=papers.pos-papers.pos%papers.step+papers.step;
-            function update(){
-                var timeout=setTimeout(function(){
-                    papers.update(5)
-                    if(papers.pos<endPos){
-                        update()
-                    }
-                },50)
-            }
-            update()
-        }
-        btnNext.onclick=function(){
-            var endPos=papers.pos+(papers.pos%papers.step==0?0:(-papers.step-papers.pos%papers.step))-papers.step;
-            function update(){
-                var timeout=setTimeout(function(){
-                    papers.update(-5)
-                    if(papers.pos>endPos){
-                        update()
-                    }
-                },50)
-            }
-            update()
-        }
+        btnPrev.onclick=papers.pageUp
+        btnNext.onclick=papers.pageDown
         //--------------------------------------------------------------------------------------
         self.setData=function(d){
             data=d
@@ -135,53 +113,64 @@ function main(){
             var angle=45
             var posZ=0
             var L,D,H
-            self.step
-            self.pos
+            var stepX,pos
             
             window.onkeyup=function(e){
                 switch(e.keyCode){
-                    case 27://Left
-                        if(angle<90){
-                            angle+=3;
-                            step+=3
-                            self.update()
+                    case 38:self.fold();break;//UP
+                    case 40:self.unfold();break;//DOWN
+                }
+            }
+            self.pageDown=function(){
+                var endPos=pos-pos%stepX+stepX;
+                function update(){
+                    var timeout=setTimeout(function(){
+                        self.update(5)
+                        if(pos<endPos){
+                            update()
                         }
-                        break;
-                    case 37://Right
-                        if(angle>3){
+                    },50)
+                }
+                update()
+            }
+            self.pageUp=function(){
+                var endPos=pos+(pos%stepX==0?0:(-stepX-pos%stepX))-stepX;
+                function update(){
+                    var timeout=setTimeout(function(){
+                        self.update(-5)
+                        if(pos>endPos){
+                            update()
+                        }
+                    },50)
+                }
+                update()
+            }
+            self.fold=function(){
+                function update(){
+                    if(angle>0){
+                        var timeout=setTimeout(function(){
                             angle-=3
                             step-=3
                             self.update()
-                        }
-                        break;
-                    case 38://UP
-                        function update1(){
-                            if(angle<81){
-                                var timeout=setTimeout(function(){
-                                    angle+=3
-                                    step+=3
-                                    posZ+=30
-                                    self.update()
-                                    update1()
-                                },50)
-                            }
-                        }
-                        update1()
-                        break;
-                    case 40://DOWN
-                        function update2(){
-                            if(angle>0){
-                                var timeout=setTimeout(function(){
-                                    angle-=3
-                                    step-=3
-                                    self.update()
-                                    update2()
-                                },50)
-                            }
-                        }
-                        update2()
-                        break;
+                            update()
+                        },50)
+                    }
                 }
+                update()
+            }
+            self.unfold=function(){
+                function update(){
+                    if(angle<81){
+                        var timeout=setTimeout(function(){
+                            angle+=3
+                            step+=3
+                            posZ+=30
+                            self.update()
+                            update()
+                        },50)
+                    }
+                }
+                update()
             }
             self.init=function(){
                 self.clear();
@@ -201,16 +190,16 @@ function main(){
                 var angle_cos=Math.cos(angle_rad)
                 var angle_sin=Math.sin(angle_rad)
 
-                self.step=step*angle_cos
+                stepX=step*angle_cos
 
                 if(s==null){
-                    self.pos=-self.step
+                    pos=-stepX
                     D=step/2
                     L=self.width()
                     H=Math.sqrt(L*L-D*D)
                 }
                
-                self.pos+=s!=null?s:0
+                pos+=s!=null?s:0
 
                 var paperArr=[]
                 var pointGroup=[]
@@ -218,11 +207,11 @@ function main(){
                 var H1=H*angle_sin
                 var H2=H/angle_cos
 
-                var X=self.pos
+                var X=pos
                 while(paperArr.length<self.child().length/2+1){
                     Y=angle_tan*Math.abs(X)
                     paperArr.push([X,Y])
-                    X+=self.step
+                    X+=stepX
                 }
 
                 var points=[]
@@ -249,7 +238,7 @@ function main(){
                         y=angle_tan*Math.abs(x)-H2
                     }else if(y2==y1){
                         x=0
-                        y=-(H-self.step)
+                        y=-(H-stepX)
                     }else{
                         var r=-(y2-y1)/(x2-x1)
                         var r2=r*r
@@ -285,10 +274,9 @@ function main(){
                             paper2.css({"-webkit-transform":"translateX("+((x+x2)/2)+"px) translateZ("+(-(y+y2)/2+posZ)+"px) rotateY("+angle2+"rad)"})
                             paper2.shadow.css({opacity:Math.abs(angle2)*0.3});
                         }
-                    }
-                    
+                    }   
                 }
-                
+
                 for(var i=0;i<points.length-2;i++){
                     var p1=points[i]
                     var p2=points[i+1]
