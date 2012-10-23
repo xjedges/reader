@@ -1,9 +1,9 @@
 @import "common";
 
-body{height:100%; overflow: hidden; font-size:16px; font-family:"微软雅黑","黑体",sans-serif;}
+body{background:#ddd;height:100%; overflow: hidden; font-size:16px; font-family:"微软雅黑","黑体",sans-serif;}
 
 .listView{
-	width:200px; height:100%; background:@white; float:left; margin:0 10px; overflow-y:auto;
+	width:200px; height:100%; float:left; margin:0 10px; overflow-y:auto;
 }
 .feedView{
 }
@@ -37,11 +37,11 @@ body{height:100%; overflow: hidden; font-size:16px; font-family:"微软雅黑","
 @grey:#999;
 .feedView{
 	position:relative;
-	width:@W+@Pad*2; height:@H; margin:60px auto;
+	width:@W+@Pad*2; height:@H; margin:60 auto;
 }
 #shadow{
 	svg{
-		@w:@W*3;
+		@w:@W*4;
 		@h:@H*2;
 		top:0;left:-(@w - @W)/2+20;
 		position:absolute;
@@ -49,34 +49,48 @@ body{height:100%; overflow: hidden; font-size:16px; font-family:"微软雅黑","
 	}
 }
 #btnPrev{
-	position:absolute; top:-40; left:-200;
-	background:#ddd; color:#fff; width:50; height:24; text-align:center;
+	position:absolute; top:-40; left:-300; cursor:pointer;
+	background:#ccc; color:#fff; width:50; height:24; text-align:center;
 }
 #btnNext{
-	position:absolute; top:-40; right:-200;
-	background:#ddd; color:#fff; width:50; height:24; text-align:center;
+	position:absolute; top:-40; right:-300; cursor:pointer;
+	background:#ccc; color:#fff; width:50; height:24; text-align:center;
 }
 
 #papers{
 	.user-select(none);
 	width:@W+@Pad*2; height:@H;
-	.perspective(1400px);
+	.perspective(1400);
 	.transform-style(preserve-3d);
 }
 .paper{
-	overflow:hidden;
 	-webkit-transform-origin:center center center;
 	position:absolute; background:#FFF;
-	padding:@Pad; margin:10px; width:@W; height:@H;
-	border:1px solid @grey;
-	border-radius:5;
+	padding:@Pad; margin:10; width:@W; height:@H;
+	// border:1 solid @grey;
+	@radius:10;
+	// display:none;
 	&.hide{
 		display:none;
 	}
-	&.back{
+	&.front{
+		border-top-right-radius:@radius;
+		border-bottom-right-radius:@radius;
 		.shadow{
 			position:absolute; top:0; left:0; z-index:100;
-			width:100%; height:100%; background:-webkit-linear-gradient(left, rgba(0,0,0,0.1) 0%,rgba(0,0,0,1) 100%);
+			border-top-right-radius:@radius;
+			border-bottom-right-radius:@radius;
+			width:100%; height:100%; background:-webkit-linear-gradient(right, rgba(0,0,0,0) 0%,rgba(0,0,0,0.2) 100%);
+		}
+	}
+	&.back{
+		border-top-left-radius:@radius;
+		border-bottom-left-radius:@radius;
+		.shadow{
+			position:absolute; top:0; left:0; z-index:100;
+			border-top-left-radius:@radius;
+			border-bottom-left-radius:@radius;
+			width:100%; height:100%; background:-webkit-linear-gradient(left, rgba(0,0,0,0.3) 0%,rgba(0,0,0,1) 100%);
 		}
 	}
 }

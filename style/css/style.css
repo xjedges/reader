@@ -20,6 +20,7 @@ cite {
   font-style: normal;
 }
 body {
+  background: #ddd;
   height: 100%;
   overflow: hidden;
   font-size: 16px;
@@ -28,7 +29,6 @@ body {
 .listView {
   width: 200px;
   height: 100%;
-  background: #ffffff;
   float: left;
   margin: 0 10px;
   overflow-y: auto;
@@ -45,20 +45,21 @@ body {
   position: relative;
   width: 310px;
   height: 360;
-  margin: 60px auto;
+  margin: 60 auto;
 }
 #shadow svg {
   top: 0;
-  left: -250;
+  left: -385;
   position: absolute;
-  width: 810;
+  width: 1080;
   height: 720;
 }
 #btnPrev {
   position: absolute;
   top: -40;
-  left: -200;
-  background: #ddd;
+  left: -300;
+  cursor: pointer;
+  background: #ccc;
   color: #fff;
   width: 50;
   height: 24;
@@ -67,8 +68,9 @@ body {
 #btnNext {
   position: absolute;
   top: -40;
-  right: -200;
-  background: #ddd;
+  right: -300;
+  cursor: pointer;
+  background: #ccc;
   color: #fff;
   width: 50;
   height: 24;
@@ -79,34 +81,52 @@ body {
   -moz-user-select: none;
   width: 310px;
   height: 360;
-  -webkit-perspective: 1400px;
-  -moz-perspective: 1400px;
+  -webkit-perspective: 1400;
+  -moz-perspective: 1400;
   -webkit-transform-style: preserve-3d;
   -moz-transform-style: preserve-3d;
 }
 .paper {
-  overflow: hidden;
   -webkit-transform-origin: center center center;
   position: absolute;
   background: #FFF;
   padding: 20px;
-  margin: 10px;
+  margin: 10;
   width: 270;
   height: 360;
-  border: 1px solid #999999;
-  border-radius: 5;
 }
 .paper.hide {
   display: none;
+}
+.paper.front {
+  border-top-right-radius: 10;
+  border-bottom-right-radius: 10;
+}
+.paper.front .shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  border-top-right-radius: 10;
+  border-bottom-right-radius: 10;
+  width: 100%;
+  height: 100%;
+  background: -webkit-linear-gradient(right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 100%);
+}
+.paper.back {
+  border-top-left-radius: 10;
+  border-bottom-left-radius: 10;
 }
 .paper.back .shadow {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 100;
+  border-top-left-radius: 10;
+  border-bottom-left-radius: 10;
   width: 100%;
   height: 100%;
-  background: -webkit-linear-gradient(left, rgba(0, 0, 0, 0.1) 0%, #000000 100%);
+  background: -webkit-linear-gradient(left, rgba(0, 0, 0, 0.3) 0%, #000000 100%);
 }
 .cell {
   position: relative;

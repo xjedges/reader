@@ -1,4 +1,4 @@
-debug(1,{W:500,H:300});
+debug(1,{W:300,H:300});
 window.onload=main;
 function SVG(tag,attr){
     var self={};
@@ -28,7 +28,7 @@ function main(){
     var info=$("span")
     var feedView=FeedView()
     body.append(feedView,info)
-    feedView.setData({items:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]})
+    feedView.setData({items:[1,1,1,1,1]})
     function FeedView(){
         var self=$("div",{cls:"feedView"})
         var size=300
@@ -41,17 +41,13 @@ function main(){
         var btnPrev=$("div",{id:"btnPrev",text:"prev"})
         var btnNext=$("div",{id:"btnNext",text:"next"})
         self.append(shadow,papers,btnPrev,btnNext)
-        //--------------------------------------------------------------------------------------
-        window.onmousewheel=function(e){
-            papers.update(-e.wheelDelta/120*5)
-        }
         btnPrev.onclick=papers.pageUp
         btnNext.onclick=papers.pageDown
-        //--------------------------------------------------------------------------------------
+        btnPrev.hide()
+        btnNext.hide()
         self.setData=function(d){
             data=d
             papers.init();
-            shadow.css({display:"none"})
             wrapCount=0;
             articlePreviewArr=[]
             for(var i in data.items){
@@ -66,7 +62,7 @@ function main(){
                     articlePreviewArr[i].data.type=parseArticle(articlePreviewArr[i].data.imgW,articlePreviewArr[i].data.imgH,articlePreviewArr[i].data.title)
                     
                     wrapdata.push(articlePreviewArr[i])
-                    if(wrapdata.length>1){
+                    if(wrapdata.length>0){
                         parseList(wrapdata,function(length,code){
                             var paper=Paper(wrapdata,length,code)
                             papers.add(paper)
@@ -77,8 +73,7 @@ function main(){
                 for(var i in articlePreviewArr){
                     articlePreviewArr[i].resize()
                 }
-                papers.update();
-                shadow.css({display:"block"})
+                papers.update(null,90);
             }
         }
         function Shadow(){
@@ -109,68 +104,145 @@ function main(){
         }
         function Papers(){
             var self=$("div",{id:"papers"})
-            var step=50
-            var angle=45
-            var posZ=0
+            var step=5
+            var angle=3
+            var Angle=90
+            var posZ=-150,posX=-144;
             var L,D,H
             var stepX,pos
-            
-            window.onkeyup=function(e){
-                switch(e.keyCode){
-                    case 38:self.fold();break;//UP
-                    case 40:self.unfold();break;//DOWN
-                }
+            var animating=false
+            window.onmousewheel=function(e){
+                if(animating || angle==3 || angle==81)return;
+                if(pos-e.wheelDelta/120*5>-stepX){self.fold();}
+                else{self.update(-e.wheelDelta/120*5)}
             }
             self.pageDown=function(){
-                var endPos=pos-pos%stepX+stepX;
+                if(animating || angle==3)return;
+                animating=true
+                var endPos=pos-(pos%stepX==0?stepX:stepX+pos%stepX);
                 function update(){
                     var timeout=setTimeout(function(){
-                        self.update(5)
-                        if(pos<endPos){
+                        self.update(endPos-pos<-5?-5:endPos-pos)
+                        if(pos>endPos){
                             update()
+                        }else{
+                            animating=false
                         }
                     },50)
                 }
                 update()
             }
             self.pageUp=function(){
-                var endPos=pos+(pos%stepX==0?0:(-stepX-pos%stepX))-stepX;
+                if(animating || angle==3)return;
+                var endPos=pos+(pos%stepX==0?stepX:-pos%stepX);
                 function update(){
                     var timeout=setTimeout(function(){
-                        self.update(-5)
-                        if(pos>endPos){
+                        self.update(endPos-pos>5?5:endPos-pos)
+                        if(pos<endPos){
                             update()
+                        }else{
+                            animating=false
                         }
                     },50)
                 }
-                update()
+                if(
+                    endPos>-stepX){self.fold()
+                }else{
+                    animating=true
+                    update()
+                }
             }
             self.fold=function(){
+                if(animating)return;
+                animating=true
                 function update(){
-                    if(angle>0){
+                    if(angle>3){
                         var timeout=setTimeout(function(){
                             angle-=3
                             step-=3
+                            posZ-=10
                             self.update()
                             update()
                         },50)
+                    }else if(Angle<90){
+                        var timeout=setTimeout(function(){
+                            Angle+=5
+                            posX-=8
+                            self.update(0,Angle)
+                            update()
+                        },50)
+                    }else{
+                        animating=false
+                        btnPrev.hide()
+                        btnNext.hide()
                     }
                 }
                 update()
             }
             self.unfold=function(){
+                if(animating)return;
+                animating=true
                 function update(){
+                    if(Angle>0){
+                        var timeout=setTimeout(function(){
+                            Angle-=5
+                            posX+=8
+                            self.update(0,Angle)
+                            update()
+                        },50)
+                    }else if(angle<45){
+                        var timeout=setTimeout(function(){
+                            angle+=3
+                            step+=3
+                            posZ+=10
+                            self.update()
+                            update()
+                        },50)
+                    }else{
+                        animating=false
+                        btnPrev.show()
+                        btnNext.show()
+                    }
+                }
+                update()
+            }
+            self.open=function(){
+                if(animating)return;
+                function flat(){
                     if(angle<81){
                         var timeout=setTimeout(function(){
                             angle+=3
                             step+=3
                             posZ+=30
                             self.update()
-                            update()
+                            flat()
                         },50)
+                    }else{
+                        animating=false
                     }
                 }
-                update()
+                function unflat(){
+                    if(angle>45){
+                        var timeout=setTimeout(function(){
+                            angle-=3
+                            step-=3
+                            posZ-=30
+                            self.update()
+                            unflat()
+                        },50)
+                    }else{
+                        animating=false
+                    }
+                }
+                if(angle==81){
+                    animating=true
+                    unflat()
+                }else if(angle==45){
+                    animating=true
+                    flat()
+                }else{
+                    self.unfold()
+                }
             }
             self.init=function(){
                 self.clear();
@@ -184,7 +256,8 @@ function main(){
                     child.addClass("back")
                 }
             }
-            self.update=function(s){
+            self.update=function(s,Angle){
+                if(pos+stepX*Math.floor(self.child().length/2)<0 && s<0){DD(11);return;}
                 var angle_rad=angle*3.14/180
                 var angle_tan=Math.tan(angle_rad)
                 var angle_cos=Math.cos(angle_rad)
@@ -209,8 +282,24 @@ function main(){
 
                 var X=pos
                 while(paperArr.length<self.child().length/2+1){
-                    Y=angle_tan*Math.abs(X)
-                    paperArr.push([X,Y])
+                    if(Angle){
+                        var l=X/angle_cos
+                        var a=Angle*3.14/180
+                        if(X<0){
+                            var angle_a_sin=angle_sin*Math.cos(a)-angle_cos*Math.sin(a)
+                            var angle_a_cos=angle_cos*Math.cos(a)+angle_sin*Math.sin(a)
+                            X=-l*angle_a_cos
+                            Y=l*angle_a_sin
+                        }else{
+                            var angle_a_sin=angle_sin*Math.cos(a)-angle_cos*Math.sin(a)
+                            var angle_a_cos=angle_cos*Math.cos(a)+angle_sin*Math.sin(a)
+                            X=l*angle_a_cos
+                            Y=-l*angle_a_sin
+                        }
+                    }else{
+                        Y=angle_tan*Math.abs(X)
+                    }
+                    paperArr.push([X+posX,Y])
                     X+=stepX
                 }
 
@@ -220,7 +309,6 @@ function main(){
                 for(var i=0;i<paperArr.length-1;i++){
 
                     points.push(paperArr[i])
-                    if(i+1==paperArr.length-1) break;
 
                     var x1=paperArr[i][0];
                     var y1=paperArr[i][1];
@@ -230,13 +318,14 @@ function main(){
                     var y0=(y1+y2)/2
                     var x,y
 
-                    if(x1<0 && x2<0){
-                        x=x0-H1
-                        y=angle_tan*Math.abs(x)-H2
-                    }else if(x1>0 && x2>0){
-                        x=x0+H1
-                        y=angle_tan*Math.abs(x)-H2
-                    }else if(y2==y1){
+                    // if(x1<0 && x2<0){
+                    //     x=x0-H1
+                    //     y=angle_tan*Math.abs(x)-H2
+                    // }else if(x1>0 && x2>0){
+                    //     x=x0+H1
+                    //     y=angle_tan*Math.abs(x)-H2
+                    // }else 
+                    if(y2==y1){
                         x=0
                         y=-(H-stepX)
                     }else{
@@ -332,6 +421,9 @@ function main(){
                 data[i].addClass("sty"+data[i].data.type[1]+" pos"+(parseInt(i)+1))
                 self.append(data[i])
             }
+            self.onclick=function(){
+                self.parent().open()
+            }
             return self
         }
         //--------------------------------------------------------------------------
@@ -344,7 +436,7 @@ function main(){
             return self
         }
         function parseArticle(width,height,title,text){
-            return [1,1]
+            return [2,1]
         }
         function parseList(data,callback){
             callback(1,1)
@@ -353,6 +445,3 @@ function main(){
         return self
     }
 }
-
-
-

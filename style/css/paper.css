@@ -42,7 +42,7 @@ body {
 #btnPrev {
   position: absolute;
   top: -40;
-  left: -200;
+  left: -300;
   cursor: pointer;
   background: #ccc;
   color: #fff;
@@ -53,7 +53,7 @@ body {
 #btnNext {
   position: absolute;
   top: -40;
-  right: -200;
+  right: -300;
   cursor: pointer;
   background: #ccc;
   color: #fff;
