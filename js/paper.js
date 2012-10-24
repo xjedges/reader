@@ -1,34 +1,12 @@
 debug(1,{W:300,H:300});
 window.onload=main;
-function SVG(tag,attr){
-    var self={};
-    self=document.createElementNS('http://www.w3.org/2000/svg',tag)
-    self.set=function(attr){
-        for(var i in attr||{}){
-            self.setAttribute(i,attr[i]);
-        }
-    }
-    self.append=function(){
-        for(var i in arguments){
-            if(isArray(arguments[i])){
-                for(var j in arguments[i]){
-                    self.appendChild(arguments[i][j]);
-                }
-            }else{
-                self.appendChild(arguments[i]);
-            }
-        };
-        return self;
-    };
-    self.set(attr)
-    return self;
-};
+
 function main(){
     var body=$("body")
     var info=$("span")
     var feedView=FeedView()
     body.append(feedView,info)
-    feedView.setData({items:[1,1,1,1,1]})
+    feedView.setData({items:[1,1,1,1,1,1,1,1,1]})
     function FeedView(){
         var self=$("div",{cls:"feedView"})
         var size=300
@@ -104,21 +82,29 @@ function main(){
         }
         function Papers(){
             var self=$("div",{id:"papers"})
-            var step=5
+            var step=3
             var angle=3
             var Angle=90
-            var posZ=-150,posX=-144;
+            var transformZ=-150,transformX=-144;
             var L,D,H
             var stepX,pos
             var animating=false
+            var mousewheelHandle
+            var mousewheel=false
             window.onmousewheel=function(e){
                 if(animating || angle==3 || angle==81)return;
-                if(pos-e.wheelDelta/120*5>-stepX){self.fold();}
-                else{self.update(-e.wheelDelta/120*5)}
+                window.clearTimeout(mousewheelHandle)
+                if(pos-e.wheelDelta/120*2>-stepX || (pos+stepX*Math.floor(self.child().length/2)<0 && -e.wheelDelta<0)){
+                    self.fold();
+                }else{
+                    self.update(-e.wheelDelta/120*2)
+                }
+                mousewheelHandle=setTimeout(function(){
+                    (e.wheelDelta>0)?(self.pageDown()):(self.pageUp())
+                },300)
             }
             self.pageDown=function(){
                 if(animating || angle==3)return;
-                animating=true
                 var endPos=pos-(pos%stepX==0?stepX:stepX+pos%stepX);
                 function update(){
                     var timeout=setTimeout(function(){
@@ -130,7 +116,12 @@ function main(){
                         }
                     },50)
                 }
-                update()
+                if(pos+stepX*Math.floor(self.child().length/2)<=0){
+                    self.fold()
+                }else{
+                    animating=true
+                    update()
+                }
             }
             self.pageUp=function(){
                 if(animating || angle==3)return;
@@ -145,8 +136,8 @@ function main(){
                         }
                     },50)
                 }
-                if(
-                    endPos>-stepX){self.fold()
+                if(endPos>-stepX){
+                    self.fold()
                 }else{
                     animating=true
                     update()
@@ -160,14 +151,14 @@ function main(){
                         var timeout=setTimeout(function(){
                             angle-=3
                             step-=3
-                            posZ-=10
+                            transformZ-=10
                             self.update()
                             update()
                         },50)
                     }else if(Angle<90){
                         var timeout=setTimeout(function(){
                             Angle+=5
-                            posX-=8
+                            transformX-=8
                             self.update(0,Angle)
                             update()
                         },50)
@@ -186,7 +177,7 @@ function main(){
                     if(Angle>0){
                         var timeout=setTimeout(function(){
                             Angle-=5
-                            posX+=8
+                            transformX+=8
                             self.update(0,Angle)
                             update()
                         },50)
@@ -194,7 +185,7 @@ function main(){
                         var timeout=setTimeout(function(){
                             angle+=3
                             step+=3
-                            posZ+=10
+                            transformZ+=10
                             self.update()
                             update()
                         },50)
@@ -213,7 +204,7 @@ function main(){
                         var timeout=setTimeout(function(){
                             angle+=3
                             step+=3
-                            posZ+=30
+                            transformZ+=30
                             self.update()
                             flat()
                         },50)
@@ -226,7 +217,7 @@ function main(){
                         var timeout=setTimeout(function(){
                             angle-=3
                             step-=3
-                            posZ-=30
+                            transformZ-=30
                             self.update()
                             unflat()
                         },50)
@@ -249,15 +240,13 @@ function main(){
                 self.add(Paper())
             }
             self.add=function(child){
-                self.append(child)
-                if(self.child().length%2){
-                    child.addClass("front")
-                }else{
-                    child.addClass("back")
-                }
+                self.append(
+                    child.addClass(
+                        self.child().length%2?"back":"front"
+                    )
+                )
             }
             self.update=function(s,Angle){
-                if(pos+stepX*Math.floor(self.child().length/2)<0 && s<0){DD(11);return;}
                 var angle_rad=angle*3.14/180
                 var angle_tan=Math.tan(angle_rad)
                 var angle_cos=Math.cos(angle_rad)
@@ -271,7 +260,7 @@ function main(){
                     L=self.width()
                     H=Math.sqrt(L*L-D*D)
                 }
-               
+
                 pos+=s!=null?s:0
 
                 var paperArr=[]
@@ -299,7 +288,7 @@ function main(){
                     }else{
                         Y=angle_tan*Math.abs(X)
                     }
-                    paperArr.push([X+posX,Y])
+                    paperArr.push([X+transformX,Y])
                     X+=stepX
                 }
 
@@ -349,7 +338,7 @@ function main(){
                             paper1.hide()
                         }else{
                             paper1.show()
-                            paper1.css({"-webkit-transform":"translateX("+((x+x1)/2)+"px) translateZ("+(-(y+y1)/2+posZ)+"px) rotateY("+angle1+"rad)"})
+                            paper1.css({"-webkit-transform":"translateX("+((x+x1)/2)+"px) translateZ("+(-(y+y1)/2+transformZ)+"px) rotateY("+angle1+"rad)"})
                             paper1.shadow.css({opacity:Math.abs(angle1)*0.3});
                         }
                     }
@@ -360,7 +349,7 @@ function main(){
                             paper2.hide()
                         }else{
                             paper2.show()
-                            paper2.css({"-webkit-transform":"translateX("+((x+x2)/2)+"px) translateZ("+(-(y+y2)/2+posZ)+"px) rotateY("+angle2+"rad)"})
+                            paper2.css({"-webkit-transform":"translateX("+((x+x2)/2)+"px) translateZ("+(-(y+y2)/2+transformZ)+"px) rotateY("+angle2+"rad)"})
                             paper2.shadow.css({opacity:Math.abs(angle2)*0.3});
                         }
                     }   
@@ -408,7 +397,6 @@ function main(){
                     shadowPoints1.push([shadowPoints[i][0],-shadowPoints[i][1],shadowPoints[i][2]])
                 }
                 shadow.update(shadowPoints1)
-                
             }
 
             return self

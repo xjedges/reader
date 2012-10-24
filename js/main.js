@@ -1,28 +1,5 @@
 debug({W:300,H:200},main);
-function SVG(tag,attr){
-    var self={};
-    self=document.createElementNS('http://www.w3.org/2000/svg',tag)
-    self.set=function(attr){
-        for(var i in attr||{}){
-            var value=attr[i];
-            self.setAttribute(i,value);
-        }
-    }
-    self.append=function(){
-        for(var i in arguments){
-            if(isArray(arguments[i])){
-                for(var j in arguments[i]){
-                    self.appendChild(arguments[i][j]);
-                }
-            }else{
-                self.appendChild(arguments[i]);
-            }
-        };
-        return self;
-    };
-    self.set(attr)
-    return self;
-};
+
 function getData(param){}
 
 function XML2JSON(xml){
