@@ -1,7 +1,5 @@
 @import "common";
 
-body{background:#ddd;height:100%; overflow: hidden; font-size:16px; font-family:"微软雅黑","黑体",sans-serif;}
-
 .listView{
 	width:200px; height:100%; float:left; margin:0 10px; overflow-y:auto;
 }
@@ -35,6 +33,7 @@ body{background:#ddd;height:100%; overflow: hidden; font-size:16px; font-family:
 @pad:10px;
 @Pad:20px;
 @grey:#999;
+body{.user-select(none);background:#ddd; height:100%; overflow: hidden; font-size:16; font-family:"微软雅黑","黑体",sans-serif;}
 .feedView{
 	position:relative;
 	width:@W+@Pad*2; height:@H; margin:60 auto;
@@ -48,14 +47,26 @@ body{background:#ddd;height:100%; overflow: hidden; font-size:16px; font-family:
 		width:@w;height:@h;
 	}
 }
-#btnPrev{
-	position:absolute; top:-40; left:-300; cursor:pointer;
-	background:#ccc; color:#fff; width:50; height:24; text-align:center;
+#controller{
+	@w:@W*2;
+	@h:@H*1.5;
+	@btnW:100;
+	top:-40;left:-(@w - @W)/2;
+	position:absolute;
+	width:@w;height:@h;
+	#touchPanel{
+		width:100%; height:100%;
+	}
+	#btnPrev{
+		position:absolute; top:0; left:-@btnW; cursor:pointer;
+		width:@btnW; height:100%;
+	}
+	#btnNext{
+		position:absolute; top:0; right:-@btnW; cursor:pointer;
+		width:@btnW; height:100%;
+	}
 }
-#btnNext{
-	position:absolute; top:-40; right:-300; cursor:pointer;
-	background:#ccc; color:#fff; width:50; height:24; text-align:center;
-}
+
 
 #papers{
 	.user-select(none);
@@ -69,10 +80,6 @@ body{background:#ddd;height:100%; overflow: hidden; font-size:16px; font-family:
 	padding:@Pad; margin:10; width:@W; height:@H;
 	// border:1 solid @grey;
 	@radius:10;
-	// display:none;
-	&.hide{
-		display:none;
-	}
 	&.front{
 		border-top-right-radius:@radius;
 		border-bottom-right-radius:@radius;

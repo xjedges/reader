@@ -16,13 +16,8 @@ function main(){
         var data;
         var shadow=Shadow()
         var papers=Papers()
-        var btnPrev=$("div",{id:"btnPrev",text:"prev"})
-        var btnNext=$("div",{id:"btnNext",text:"next"})
-        self.append(shadow,papers,btnPrev,btnNext)
-        btnPrev.onclick=papers.pageUp
-        btnNext.onclick=papers.pageDown
-        btnPrev.hide()
-        btnNext.hide()
+        var controller=Controller()
+        self.append(shadow,papers,controller)
         self.setData=function(d){
             data=d
             papers.init();
@@ -53,6 +48,46 @@ function main(){
                 }
                 papers.update(null,90);
             }
+        }
+        function Controller(){
+            var self=$("div",{id:"controller"})
+            var btnPrev=$("div",{id:"btnPrev"})
+            var btnNext=$("div",{id:"btnNext"})
+            var touchPanel=$("div",{id:"touchPanel"})
+            btnPrev.onclick=papers.pageUp
+            btnNext.onclick=papers.pageDown
+            self.append(btnPrev,btnNext,touchPanel)
+            var x0,x1,xt,xt1
+            var mouseMove=false
+            var mouseDown=false
+            touchPanel.onmousedown=function(e){
+                mouseMove=false
+                mouseDown=true
+                xt=x0=e.clientX
+            }
+            touchPanel.onmouseup=function(e){
+                mouseDown=false
+                if(!mouseMove){
+                    papers.open()
+                }else{
+                    x1=e.clientX
+                    if(x0>x1){
+                        papers.pageDown()
+                    }else{papers.pageUp()}
+                }
+            };
+            touchPanel.onmousemove=function(e){
+                mouseMove=true
+                if(mouseDown){
+                    var xt1=e.clientX
+                    papers.slide((xt1-xt)/20)
+                    xt=xt1
+                }
+            }
+            touchPanel.onmousewheel=function(e){
+                papers.slide(e.wheelDelta/120*2)
+            }
+            return self
         }
         function Shadow(){
             var self=$("div",{id:"shadow"})
@@ -89,23 +124,22 @@ function main(){
             var L,D,H
             var stepX,pos
             var animating=false
-            var mousewheelHandle
-            var mousewheel=false
-            window.onmousewheel=function(e){
+            var slideHandle
+            self.slide=function(gain){
                 if(animating || angle==3 || angle==81)return;
-                window.clearTimeout(mousewheelHandle)
-                if(pos-e.wheelDelta/120*2>-stepX || (pos+stepX*Math.floor(self.child().length/2)<0 && -e.wheelDelta<0)){
+                window.clearTimeout(slideHandle)
+                if(pos+gain>-step || (pos+step*Math.floor(self.child().length/2)<0 && gain<0)){
                     self.fold();
                 }else{
-                    self.update(-e.wheelDelta/120*2)
+                    self.update(gain)
                 }
-                mousewheelHandle=setTimeout(function(){
-                    (e.wheelDelta>0)?(self.pageDown()):(self.pageUp())
-                },300)
+                slideHandle=setTimeout(function(){
+                    (gain<0)?(self.pageDown()):(self.pageUp())
+                },100)
             }
             self.pageDown=function(){
                 if(animating || angle==3)return;
-                var endPos=pos-(pos%stepX==0?stepX:stepX+pos%stepX);
+                var endPos=pos-(pos%step==0?step:step+pos%step);
                 function update(){
                     var timeout=setTimeout(function(){
                         self.update(endPos-pos<-5?-5:endPos-pos)
@@ -116,7 +150,7 @@ function main(){
                         }
                     },50)
                 }
-                if(pos+stepX*Math.floor(self.child().length/2)<=0){
+                if(pos+step*Math.floor(self.child().length/2)<=0){
                     self.fold()
                 }else{
                     animating=true
@@ -125,7 +159,7 @@ function main(){
             }
             self.pageUp=function(){
                 if(animating || angle==3)return;
-                var endPos=pos+(pos%stepX==0?stepX:-pos%stepX);
+                var endPos=pos+(pos%step==0?step:-pos%step);
                 function update(){
                     var timeout=setTimeout(function(){
                         self.update(endPos-pos>5?5:endPos-pos)
@@ -136,7 +170,7 @@ function main(){
                         }
                     },50)
                 }
-                if(endPos>-stepX){
+                if(endPos>-step){
                     self.fold()
                 }else{
                     animating=true
@@ -147,7 +181,12 @@ function main(){
                 if(animating)return;
                 animating=true
                 function update(){
-                    if(angle>3){
+                    if(pos<-step){
+                        var timeout=setTimeout(function(){
+                            self.update(step/4)
+                            update()
+                        },50)
+                    }else if(angle>3){
                         var timeout=setTimeout(function(){
                             angle-=3
                             step-=3
@@ -164,8 +203,6 @@ function main(){
                         },50)
                     }else{
                         animating=false
-                        btnPrev.hide()
-                        btnNext.hide()
                     }
                 }
                 update()
@@ -191,8 +228,6 @@ function main(){
                         },50)
                     }else{
                         animating=false
-                        btnPrev.show()
-                        btnNext.show()
                     }
                 }
                 update()
@@ -203,9 +238,9 @@ function main(){
                     if(angle<81){
                         var timeout=setTimeout(function(){
                             angle+=3
-                            step+=3
+                            // step+=3
                             transformZ+=30
-                            self.update()
+                            self.update(0)
                             flat()
                         },50)
                     }else{
@@ -216,9 +251,9 @@ function main(){
                     if(angle>45){
                         var timeout=setTimeout(function(){
                             angle-=3
-                            step-=3
+                            // step-=3
                             transformZ-=30
-                            self.update()
+                            self.update(0)
                             unflat()
                         },50)
                     }else{
@@ -255,7 +290,7 @@ function main(){
                 stepX=step*angle_cos
 
                 if(s==null){
-                    pos=-stepX
+                    pos=-step
                     D=step/2
                     L=self.width()
                     H=Math.sqrt(L*L-D*D)
@@ -269,7 +304,7 @@ function main(){
                 var H1=H*angle_sin
                 var H2=H/angle_cos
 
-                var X=pos
+                var X=pos*angle_cos
                 while(paperArr.length<self.child().length/2+1){
                     if(Angle){
                         var l=X/angle_cos
@@ -408,9 +443,6 @@ function main(){
             for(var i in data){
                 data[i].addClass("sty"+data[i].data.type[1]+" pos"+(parseInt(i)+1))
                 self.append(data[i])
-            }
-            self.onclick=function(){
-                self.parent().open()
             }
             return self
         }

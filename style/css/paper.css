@@ -20,6 +20,8 @@ cite {
   font-style: normal;
 }
 body {
+  -webkit-user-select: none;
+  -moz-user-select: none;
   background: #ddd;
   height: 100%;
   overflow: hidden;
@@ -39,27 +41,32 @@ body {
   width: 1080;
   height: 720;
 }
-#btnPrev {
-  position: absolute;
+#controller {
   top: -40;
-  left: -300;
-  cursor: pointer;
-  background: #ccc;
-  color: #fff;
-  width: 50;
-  height: 24;
-  text-align: center;
+  left: -135;
+  position: absolute;
+  width: 540;
+  height: 540;
 }
-#btnNext {
+#controller #touchPanel {
+  width: 100%;
+  height: 100%;
+}
+#controller #btnPrev {
   position: absolute;
-  top: -40;
-  right: -300;
+  top: 0;
+  left: -100;
   cursor: pointer;
-  background: #ccc;
-  color: #fff;
-  width: 50;
-  height: 24;
-  text-align: center;
+  width: 100;
+  height: 100%;
+}
+#controller #btnNext {
+  position: absolute;
+  top: 0;
+  right: -100;
+  cursor: pointer;
+  width: 100;
+  height: 100%;
 }
 #papers {
   -webkit-user-select: none;
@@ -79,10 +86,6 @@ body {
   margin: 10;
   width: 270;
   height: 360;
-  display: none;
-}
-.paper.hide {
-  display: none;
 }
 .paper.front {
   border-top-right-radius: 10;
