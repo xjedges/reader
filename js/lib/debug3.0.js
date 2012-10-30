@@ -56,8 +56,8 @@ function debug(){
 		msgInset(getNum()+getMsg(arguments)+"<br/>");
 	};
 	Q=function(){
-		var args=Array.prototype.slice.apply(arguments).pop();
-		if(typeof arguments[0]=="boolean" && arguments[0])D.call(this,args);
+		var args=Array.prototype.slice.apply(arguments).slice(1);
+		if(typeof arguments[0]=="boolean" && arguments[0])D.apply(this,args);
 	};
 	T=function(table){
 		var html="<span class='arr'>"+table.name+":</span>";

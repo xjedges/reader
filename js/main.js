@@ -1,4 +1,4 @@
-debug({W:300,H:200},main);
+debug({W:600,H:600},main);
 
 function getData(param){}
 
@@ -93,8 +93,10 @@ function API(){
                 var xml=text.responseXML
                 callback(XML2JSON(xml))
             }else{
+                document.write(text.responseText)
                 eval("var data="+text.responseText)
-                callback(data)
+                JJ(data)
+                // callback(data)
             }
         })
     }
@@ -138,7 +140,7 @@ function main(){
             self.id=data.id
             self.onclick=function(){
                 api.gett(data.id,{},function(data){
-                    //JJ(data)
+                    // JJ(data)
                     feedView.setData(data)
                 })
             }
