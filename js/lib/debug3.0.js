@@ -6,12 +6,9 @@
  *		 fun:执行函数<function>,
  *		 param:参数<{ W:宽度<number>, H:高度<number>, P:面板位置<"TL|TR|BL|BR">, T:颜色<"dark|light|mono"> }>
  *
- * 方法: D(信息), F(函数追踪), X(时间), J(对象数组), A(数组), T(二维数组), Z(DOM对象), N(浏览器)
- *
- * 		 V(变量追踪) Q(变量名)
  */
 
-window.debug=debug
+window.debug=debug;
 
 function debug(){
 	//--------------------------------------------------------------------
@@ -24,7 +21,8 @@ function debug(){
 				fun=arguments[i];
 				window.onload=function(){
 					startTime=new Date();
-					if(fun)getError(fun);
+					// if(fun)getError(fun);
+					fun()
 				};
 				break;
 			case "number":orient=arguments[i];break;
@@ -41,11 +39,9 @@ function debug(){
 	D=function(){},DD=function(){D.apply(this,arguments);S();},//打印 Array|Number|String
 	Q=function(){},QQ=function(){Q.apply(this,arguments);S();},//打印 Array|Number|String（条件）
 	A=function(){},AA=function(){A.apply(this,arguments);S();},//打印 Array
-	T=function(){},TT=function(){T.apply(this,arguments);S();},//打印 Table
 	J=function(){},JJ=function(){J.apply(this,arguments);S();},//打印 Object
 	F=function(){},FF=function(){F.apply(this,arguments);S();},//打印 Function
 	Z=function(){},ZZ=function(){Z.apply(this,arguments);S();},//打印 Dom对象
-	X=function(){},XX=function(){X.apply(this,arguments);S();},//打印 Dom对象
 	N=function(){},NN=function(){N.apply(this,arguments);S();},//打印 BrowerInfo
 	X=function(){},XX=function(){X.apply(this,arguments);S();},//打印 time
 	S=function(){};//打印显示
@@ -58,23 +54,6 @@ function debug(){
 	Q=function(){
 		var args=Array.prototype.slice.apply(arguments).slice(1);
 		if(typeof arguments[0]=="boolean" && arguments[0])D.apply(this,args);
-	};
-	T=function(table){
-		var html="<span class='arr'>"+table.name+":</span>";
-		html+="<table class='table'><tr><th>#</th>";
-		for(var i in table.header){
-			html+="<th>"+table.header[i]+"</th>";
-		};
-		html+="</tr>";
-		for(var i in table.data){
-			html+="<tr><td>"+msgStyle(parseInt(i))+"</td>";
-			for(var j in table.data[i]){
-				html+="<td><a title='"+table.data[i][j]+"'>"+msgStyle(table.data[i][j])+"</a></td>";
-			};
-			html+="</tr>";
-		};
-		html+="</table>";
-		msgInset(html);
 	};
 	A=function(arr){
 		var html=getNum()+style("arr","[array]");
@@ -159,43 +138,6 @@ function debug(){
 		html+="</span>";
 		msgInset(html);
 		function domTree(all,indexArr){
-			var len=all.children.length;
-			for(var i=0;i<len;i++){
-				
-				var blank="";
-				for(var j=indexArr.length-1;j>=0;j--){
-					if(indexArr[j]==false){blank="┃　"+blank;}
-					else{blank="　　"+blank;}
-				};
-				if(i!=(len-1)){
-					var branch="┣━";
-					indexArr.push(false);
-				}else{
-					var branch="┗━";
-					indexArr.push(true);
-				};
-				
-				var selfNode=all.children[i];
-				
-				var id=(selfNode.getAttribute("id")!=null)?     style("id"," #"+selfNode.getAttribute("id")+"")    :"";
-				var cls=(selfNode.getAttribute("class")!=null)? style("cls"," ."+selfNode.getAttribute("class")+""):"";
-				
-				var label=style("tag","&lt;"+selfNode.nodeName.toLowerCase()+"&gt;");
-				var str=blank+branch+label+id+cls;
-				
-				html+=str+"<br/>";
-				
-				if(selfNode.children.length>0)domTree(selfNode,indexArr);
-				indexArr.pop();
-			};
-		};
-	};
-	X=function(obj){
-		var html=getNum()+"<span>"+style("tag","&lt;"+obj.nodeName.toLowerCase()+"&gt;")+"<br/>";
-		domTree(obj,[]);
-		html+="</span>";
-		msgInset(html);
-		function domTree(all,indexArr){
 			var len=all.childNodes.length;
 			for(var i=0;i<len;i++){
 				
@@ -214,11 +156,12 @@ function debug(){
 				
 				var selfNode=all.childNodes[i];
 				
-				//var id=(selfNode.getAttribute("id")!=null)?     style("id"," #"+selfNode.getAttribute("id")+"")    :"";
-				//var cls=(selfNode.getAttribute("class")!=null)? style("cls"," ."+selfNode.getAttribute("class")+""):"";
+				var id=(selfNode.getAttribute("id")!=null)?     style("id"," #"+selfNode.getAttribute("id")+"")    :"";
+				var cls=(selfNode.getAttribute("class")!=null)? style("cls"," ."+selfNode.getAttribute("class")+""):"";
 				var value=selfNode.nodeValue?htmlReplace(selfNode.nodeValue):""
+				
 				var label=style("tag","&lt;"+selfNode.nodeName.toLowerCase()+"&gt;");
-				var str=blank+branch+label+value;
+				var str=blank+branch+label+id+cls+value;
 				
 				html+=str+"<br/>";
 				
@@ -369,48 +312,14 @@ function debug(){
 		if(theme!="mono"){return "<span class='"+str+"'>"+text+"</span>";}
 		else{return text;};
 	};
-	function getFun(fn){
-		fn=fn.toString();
-		fn=fn.replace(/function\s*([a-zA-Z0-9_]*)\s*[\S\W]*/,"$1");
-		fn=(fn=="")?fn:"------"+style("fun",fn+' ( )');
-		return fn;
-	};
 	function getNum(){
 		num++;
 		var num_str=style("index",num);
-		return num>100
-				?num<10
-					?num_str+"===>"
-					:num_str+"==>"
-				:num_str+"=>";
-	};
-	function getError(fn){
-		if(nav=="Gecko"){
-			try{fn();}
-			catch(e){
-				var html="Error>>"+style("warm",e.line)+"."+
-						 style("warm",e.message)+"<br/>"+
-						 style("warm",e.sourceURL)+"<br/>";
-				msgInset(html);
-		    };
-		}else if(nav=="Firefox"){
-		    try{fn();}
-			catch(e){
-				var html="Error>>"+style("warm",e.lineNumber)+"."+
-						 style("warm",e.message)+"<br/>"+
-						 style("warm",e.fileName)+"<br/>";
-				msgInset(html);
-		    };
-		}else{
-			window.onerror=function(msg,url,line){
-				var html=style("warm",line)+"==>"+
-						 style("warm",msg)+"<br/>"+
-						 style("warm",url)+"<br/>";
-				msgInset(html);
-			};
-			fn();
-		};
-		showMsg();
+		return num_str+(num<10
+							?"===>"
+							:num<100
+								?"==>"
+								:"=>");
 	};
 	function getNav(){
 		var sUA=navigator.userAgent;

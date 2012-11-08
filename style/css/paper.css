@@ -19,6 +19,27 @@ em,
 cite {
   font-style: normal;
 }
+#track {
+  position: absolute;
+}
+#track .dot2 {
+  background: #0F0;
+  width: 2px;
+  height: 290;
+  margin: -145 0 0 -1px;
+  position: absolute;
+}
+#shadowDot {
+  position: absolute;
+  font-size: 9px;
+}
+#shadowDot .dot1 {
+  background: #F00;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  position: absolute;
+}
 body {
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -36,7 +57,7 @@ body {
 }
 #shadow svg {
   top: 0;
-  left: -385;
+  left: -405;
   position: absolute;
   width: 1080;
   height: 720;

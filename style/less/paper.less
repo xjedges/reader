@@ -20,7 +20,15 @@
 	-webkit-perspective:@width;
 	-moz-perspective:@width;
 }
-
+#track{
+	position:absolute;
+	.dot2{background:#0F0; width:2px; height:@W+@Pad*2;margin:-@W/2-@Pad 0 0 -1px;  position:absolute;}
+}
+#shadowDot{
+	position:absolute;
+	font-size:9px;
+	.dot1{background:#F00; width:4px; height:4px;margin:-2px 0 0 -2px;  position:absolute;}
+}
 @W:270;
 @H:360;
 @pad:10;
@@ -36,7 +44,7 @@ body{.user-select(none);background:#ddd; height:100%; overflow: hidden; font-siz
 	svg{
 		@w:@W*4;
 		@h:@H*2;
-		top:0;left:-(@w - @W)/2+20;
+		top:0;left:-(@w - @W)/2;
 		position:absolute;
 		width:@w;height:@h;
 	}
