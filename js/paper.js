@@ -137,7 +137,7 @@ function main(){
             self.update=function(arr){
                 var str=""
                 for(var i in arr){
-                    str+=Math.round(arr[i][0]/**perspective/(perspective+arr[i][2])*/+offsetX)+","+Math.round(-arr[i][1]+offsetY)+" "
+                    str+=Math.round(arr[i][0]+offsetX)+","+Math.round(-arr[i][1]+offsetY)+" "
                 }
                 polygon.set({points:str})
             }
@@ -419,8 +419,8 @@ function main(){
 
                     var paper1=self.child(2*i)
                     var paper2=self.child(2*i+1)
-                    var line1=track.child(2*i)
-                    var line2=track.child(2*i+1)
+                    // var line1=track.child(2*i)
+                    // var line2=track.child(2*i+1)
 
                     if(paper1){
                         var angle1=Math.atan((y-y1)/(x-x1))
@@ -431,7 +431,7 @@ function main(){
                             paper1.css({"-webkit-transform":"translateX("+((x+x1)/2)+"px) translateZ("+(-(y+y1)/2)+"px) rotateY("+angle1+"rad)"})
                             paper1.shadow.css({opacity:Math.abs(angle1)*0.3});
                         }
-                        line1.css({top:-(y+y1)/2,left:(x+x1)/2,"-webkit-transform":"rotate("+(3.14/2-angle1)+"rad)"})
+                        // line1.css({top:-(y+y1)/2,left:(x+x1)/2,"-webkit-transform":"rotate("+(3.14/2-angle1)+"rad)"})
                     }
                     
                     if(paper2){
@@ -443,44 +443,46 @@ function main(){
                             paper2.css({"-webkit-transform":"translateX("+((x+x2)/2)+"px) translateZ("+(-(y+y2)/2)+"px) rotateY("+angle2+"rad)"})
                             paper2.shadow.css({opacity:Math.abs(angle2)*0.3});
                         }
-                        line2.css({top:-(y+y2)/2,left:(x+x2)/2,"-webkit-transform":"rotate("+(3.14/2-angle2)+"rad)"});
+                        // line2.css({top:-(y+y2)/2,left:(x+x2)/2,"-webkit-transform":"rotate("+(3.14/2-angle2)+"rad)"});
                     }
                 }
-                var perspective=1400
 
+                var perspective=1400
+                var height=self.height()
                 for(var i in points){
-                    points[i][0]=points[i][0]*perspective/(perspective+points[i][1])
+                    points[i][0]=points[i][0]*perspective/(perspective+points[i][1]+transform.z/5)
+                    points[i][1]=height*(perspective+points[i][1]+transform.z/5)/perspective
                 }
+
                 for(var i=0;i<points.length-2;i++){
                     var p1=points[i]
                     var p2=points[i+1]
                     var p3=points[i+2]
 
-                    if(p3[0]>p1[0] && p1[0]>p2[0] && p2[0]>0){
-                        var p=cast(p1,p2,p3)
-                        addPoint(p1)
-                        addPoint(p,p1[1])
-                    }else if(p2[0]>p3[0] && p3[0]>p1[0] && p2[0]<0){
-                        var p=cast(p3,p2,p1)
-                        addPoint(p,p3[1])
-                        addPoint(p3)
-                    }else if(p3[0]>p2[0] && p2[0]>p1[0]){
-                        if(i==0){shadowPoints.push(p1);}
-                        addPoint(p2)
-                        if(i==points.length-3){addPoint(p3);}
-                    }
-                    else if(i==0){
-                        if(p2[0]>p3[0] && p3[0]>p1[0]){
+                    if(p3[0]>p1[0] && p1[0]>p2[0]){
+                        if(p1[1]<p3[1]){
+                            var p=cast(p1,p2,p3)
                             addPoint(p1)
-                        }else if(p3[0]>p1[0] && p1[0]>p2[0]){
-                            addPoint(p2)
-                        }
-                    }else if(i==points.length-3){
-                        if(p3[0]>p1[0] && p1[0]>p2[0]){
+                            addPoint(p,p1[1])
                             addPoint(p3)
-                        }else if(p2[0]>p3[0] && p3[0]>p1[0]){
+                        }else if(i==points.length-3){
+                            addPoint(p2)
+                            addPoint(p3)
+                        }
+                    }else if(p2[0]>p3[0] && p3[0]>p1[0]){
+                        if(p1[1]>p3[1]){
+                            var p=cast(p3,p2,p1)
+                            addPoint(p1)
+                            addPoint(p,p3[1])
+                            addPoint(p3)
+                        }else if(i==0){
+                            addPoint(p1)
                             addPoint(p2)
                         }
+                    }else if(p3[0]>p2[0] && p2[0]>p1[0]){
+                        shadowPoints.push(p1);
+                        addPoint(p2)
+                        addPoint(p3);
                     }
                 }
                 function cast(p1,p2,p3){
@@ -491,25 +493,25 @@ function main(){
                     shadowPoints.push([point[0],point[1],z?z:point[1]])
                 }
 
-                var offsetX=perspective/(perspective+transform.z*2)*20
-                var offsetY=-offsetX
+                // var offsetX=perspective/(perspective+transform.z*2)*20
+                // var offsetY=-offsetX
 
-                for(var i=0;i<shadowPoints.length;i++){
-                    shadowPoints[i][1]=(shadowPoints[i][1]/4-200)*(perspective+transform.z/2)/perspective
-                    shadowPoints[i][0]=shadowPoints[i][0]
-                }
+                // for(var i=0;i<shadowPoints.length;i++){
+                //     shadowPoints[i][1]=shadowPoints[i][1]-200
+                //     shadowPoints[i][0]=shadowPoints[i][0]
+                // }
                 
                 for(var i=0;i<shadowPoints.length;i++){
-                    shadowPoints[i][1]=-shadowPoints[i][1]
+                    // shadowPoints[i][1]=-shadowPoints[i][1]
                 }
-                for(var i=shadowPoints.length-1;i>=0;i--){
-                    shadowPoints.push([shadowPoints[i][0],-shadowPoints[i][1],shadowPoints[i][2]])
-                }
+                // for(var i=shadowPoints.length-1;i>=0;i--){
+                //     shadowPoints.push([shadowPoints[i][0],-shadowPoints[i][1],shadowPoints[i][2]])
+                // }
 
-                for(var i=0;i<shadowPoints.length;i++){
-                    shadowPoints[i][0]+=offsetX
-                    shadowPoints[i][1]+=offsetY
-                }
+                // for(var i=0;i<shadowPoints.length;i++){
+                //     shadowPoints[i][0]+=offsetX
+                //     shadowPoints[i][1]+=offsetY
+                // }
 
 
 
@@ -520,6 +522,7 @@ function main(){
                     shadowDot.child(i).css({top:-shadowPoints[i][1],left:shadowPoints[i][0]})
                     shadowDot.child(i).html("("+Math.round(shadowPoints[i][0])+","+Math.round(shadowPoints[i][1])+")")
                 }
+                
 
                 shadow.update(shadowPoints)
             }
