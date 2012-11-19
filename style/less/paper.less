@@ -1,25 +1,5 @@
 @import "common";
 
-.user-select(@value){
-	-webkit-user-select:@value;
-	-moz-user-select:@value;
-}
-.transition(@attribute:all,@time:0.5,@effect:ease){
-	-webkit-transition: @arguments;
-	-moz-transition: @arguments;
-}
-.transform(@arguments){
-	-webkit-transform:@arguments;
-	-moz-transform:@arguments;
-}
-.transform-style(@style){
-	-webkit-transform-style: @style;
-	-moz-transform-style: @style;
-}
-.perspective(@width){
-	-webkit-perspective:@width;
-	-moz-perspective:@width;
-}
 #track{
 	position:absolute;
 	.dot2{background:#0F0; width:2px; height:@W+@Pad*2;margin:-@W/2-@Pad 0 0 -1px;  position:absolute;}
@@ -35,7 +15,7 @@
 @Pad:10;
 @grey:#999;
 
-body{.user-select(none);background:#ddd; height:100%; overflow: hidden; font-size:16; font-family:"微软雅黑","黑体",sans-serif;}
+body{.userSelect(none);background:#ddd; height:100%; font-size:16; font-family:"微软雅黑","黑体",sans-serif;}
 .feedView{
 	position:relative;
 	width:@W+@Pad*2; height:@H; margin:60 auto;
@@ -44,7 +24,7 @@ body{.user-select(none);background:#ddd; height:100%; overflow: hidden; font-siz
 	svg{
 		@w:@W*4;
 		@h:@H*2;
-		top:0;left:-(@w - @W)/2;
+		top:-100;left:-(@w - @W)/2;
 		position:absolute;
 		width:@w;height:@h;
 	}
@@ -71,7 +51,6 @@ body{.user-select(none);background:#ddd; height:100%; overflow: hidden; font-siz
 
 
 #papers{
-	.user-select(none);
 	width:@W+@Pad*2; height:@H;
 	.perspective(1400);
 	.transform-style(preserve-3d);
@@ -80,8 +59,8 @@ body{.user-select(none);background:#ddd; height:100%; overflow: hidden; font-siz
 	-webkit-transform-origin:center center center;
 	position:absolute; background:#FFF;
 	padding:@Pad; margin:10; width:@W; height:@H;
-	// border:1 solid @grey;
 	@radius:10;
+	font-size:12px;
 	&.front{
 		border-top-right-radius:@radius;
 		border-bottom-right-radius:@radius;
@@ -89,11 +68,22 @@ body{.user-select(none);background:#ddd; height:100%; overflow: hidden; font-siz
 			position:absolute; top:0; left:0; z-index:100;
 			border-top-right-radius:@radius;
 			border-bottom-right-radius:@radius;
-			width:100%; height:100%; background:-webkit-linear-gradient(right, rgba(0,0,0,0.3) 0%,rgba(0,0,0,1) 100%);
+			width:100%; height:100%; background:-webkit-linear-gradient(right, rgba(0,0,0,0.3) 0%,rgba(0,0,0,0.6) 100%);
 		}
 		.cell{position:relative;}
 		.tag{
-			position:absolute; right:0; width:100px; height:30px; background:#F00;
+			padding:5;
+			border-top-right-radius:3;
+			border-bottom-right-radius:3;
+			overflow: hidden;white-space:nowrap;
+			position:absolute; right:0; background:#F00;
+			text-align:right;
+			&.back{
+				&:after{
+					content:""; position:absolute; top:0; left:0; width:100%; height:100%;
+					background:-webkit-linear-gradient(right, rgba(0,0,0,0) 60%,rgba(0,0,0,0.5) 100%);
+				}
+			}
 		}
 	}
 	&.back{
@@ -103,11 +93,22 @@ body{.user-select(none);background:#ddd; height:100%; overflow: hidden; font-siz
 			position:absolute; top:0; left:0; z-index:100;
 			border-top-left-radius:@radius;
 			border-bottom-left-radius:@radius;
-			width:100%; height:100%; background:-webkit-linear-gradient(left, rgba(0,0,0,0.3) 0%,rgba(0,0,0,1) 100%);
+			width:100%; height:100%; background:-webkit-linear-gradient(left, rgba(0,0,0,0.3) 0%,rgba(0,0,0,0.6) 100%);
 		}
 		.cell{position:relative;}
 		.tag{
-			position:absolute; left:0; width:100px; height:30px; background:#F00;
+			padding:5;
+			border-top-left-radius:3;
+			border-bottom-left-radius:3;
+			overflow: hidden;white-space:nowrap;
+			position:absolute; left:0; background:#F00;
+			text-align:right;
+			&.back{
+				&:after{
+					content:""; position:absolute; top:0; left:0; width:100%; height:100%;
+					background:-webkit-linear-gradient(left, rgba(0,0,0,0) 60%,rgba(0,0,0,0.5) 100%);
+				}
+			}
 		}
 	}
 }

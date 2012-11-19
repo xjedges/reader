@@ -131,6 +131,15 @@ HTMLElement.prototype.attr=function(attrName,attr){
     if(attr){this.setAttribute(attrName,attr)}
     else{return this.getAttribute(attrName)}
 };
+HTMLElement.prototype.domIndex=function(){
+    var k = 0;
+    var elem=this
+    while(elem.previousSibling){
+        k++;
+        elem = elem.previousSibling;
+    }
+    return k
+};
 HTMLElement.prototype.each=function(fun){
     for(var i=0;i<this.childNodes.length;i++){
         fun.call(this.childNodes[i],i);
