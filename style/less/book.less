@@ -1,0 +1,242 @@
+@import "common";
+
+.W(@Wper:1,@Wgain:0){
+	width:round(@W*@Wper+@Wgain);
+}
+.H(@Hper:1,@Hgain:0){
+	height:round(@H*@Hper+@Hgain);
+}
+
+.cell{position:relative;}
+.title{font-size:12px;word-break:break-all;}
+.text{font-size:9px;word-break:break-all;}
+.box{position:relative;width:100%; height:100%; overflow: hidden;}
+.img{
+	width:100%; position:relative; overflow:hidden;
+	img{position:absolute;}
+}
+
+.divid_L(){
+	&:after{
+		content:""; position:absolute; top:0; left:-5px; height:100%; width:1px; background:-webkit-linear-gradient(top, #fff 0%,@grey 10%,@grey 90%,#fff 100%);
+	}
+}
+.divid_R(){
+	&:after{
+		content:""; position:absolute; top:0; right:-5px; height:100%; width:1px; background:-webkit-linear-gradient(top, #fff 0%,@grey 10%,@grey 90%,#fff 100%);
+	}
+}
+.divid_B(){
+	&:after{
+		content:""; position:absolute; bottom:-5px; width:100%; height:1px; background:-webkit-linear-gradient(left, #fff 0%,@grey 10%,@grey 90%,#fff 100%);
+	}
+}
+
+.sty1,.pos1.sty1,.pos1.sty2{
+	.img{.W();.H();}
+	.title{position:absolute;bottom:0; left:0;  background:rgba(0,0,0,0.6); color:@white; padding:2px;z-index:5;}
+}
+
+.len1{
+	&.tmp1{
+		.cell{
+			&.pos1{
+				.W();.H();
+			}
+		}
+	}
+}
+.len2{
+	&.tmp1{
+		.cell{
+			&.pos1{
+				margin-bottom:@pad;
+			}
+			&.pos1,&.pos2{
+				.W();.H(0.5,-@pad/2);
+			}
+		}
+	}
+}
+.len3{
+	&.tmp1{
+		.cell{
+			float:left;
+			&.pos1{
+				margin-bottom:@pad;
+				.W(1);.H(0.5,-@pad);
+			}
+			&.pos2{
+				margin-right:@pad;
+				.W(0.5,-@pad/2);.H(0.5);
+			}
+			&.pos3{
+				.W(0.5,-@pad/2);.H(0.5);
+			}
+		}
+	}
+	&.tmp2{
+		.cell{
+			float:left;
+			&.pos1{
+				margin-right:@pad;
+				.W(0.5,-@pad/2);.H();
+			}
+			&.pos2{
+				margin-bottom:@pad;
+			}
+			&.pos2,&.pos3{
+				.W(0.5,-@pad/2);.H(0.5,-@pad/2);
+			}
+		}
+	}
+	&.tmp3{
+		.cell{
+			.img{height:100%;width:60%;float:left;}
+			.title{width:40%;float:right; position:relative; background:transparent;color:#000;padding:0;}
+			&.pos1,&.pos2{
+				.divid_B();
+				margin-bottom:@pad;
+			}
+			&.pos1,&.pos2,&.pos3{
+				.W();.H(1/3,-(@pad*2/3));
+			}
+		}
+	}
+}
+.len4{
+	&.tmp1{
+		.cell{
+			float:left;
+			&.pos1{
+				margin-bottom:@pad;
+				.W();.H(0.5,-@pad/2);
+			}
+			&.pos2,&.pos3{
+				margin-right:@pad;
+			}
+			&.pos2,&.pos3,&.pos4{
+				.W(1/3,-@pad*2/3);.H(0.5,-@pad/2);
+			}
+		}
+	}
+	&.tmp2{
+		.cell{
+			float:left;
+			&.pos1{
+				margin-right:@pad;
+				.W(0.5,-@pad/2);.H();
+			}
+			&.pos2,&.pos3{
+				margin-bottom:@pad;
+			}
+			&.pos2,&.pos3,&.pos4{
+				.W(0.5,-@pad/2);.H(1/3,-@pad*2/3);
+			}
+		}
+	}
+	&.tmp3{
+		.cell{
+			float:left;
+			&.pos1{
+				margin-bottom:@pad;
+				.W();.H(0.4,-@pad/2);
+			}
+			&.pos2{
+				margin-right:@pad;
+				.divid_R();
+				.W(0.5,-@pad/2);.H(0.6,-@pad/2);
+			}
+			&.pos3{
+				margin-bottom:@pad;
+			}
+			&.pos3,&.pos4{
+				.W(0.5,-@pad/2);.H(0.3,-@pad*2/3);
+			}
+		}
+	}
+	&.tmp4{
+		.cell{
+			&.pos1{
+				margin-bottom:@pad;
+				.W();.H(0.4,-@pad/2);
+			}
+			&.pos2,&.pos3{
+				.W(0.5,-@pad/2);.H(0.3,-@pad*2/3);
+			}
+			&.pos2{
+				margin-bottom:@pad;
+			}
+			&.pos4{
+				position:absolute;
+				.divid_L();
+				bottom:@Pad; right:@Pad;
+				.W(0.5,-@pad/2);.H(0.6,-@pad/2);
+			}
+		}
+	}
+}
+.len5{
+	&.tmp1{
+		.cell{
+			float:left;
+			&.pos1{
+				.W();.H(0.4,-@pad/2);
+			}
+			&.pos2,&.pos4{
+				margin-right:@pad;
+			}
+			&.pos2,&.pos3,&.pos4,&.pos5{
+				margin-top:@pad;
+				.W(0.5,-@pad/2);.H(0.3,-@pad*2/3);
+			}
+		}
+	}
+	&.tmp2{
+		.cell{
+			float:left;
+			&.pos3{
+				margin-top:@pad;
+				margin-bottom:@pad;
+				.W();.H(0.4,-@pad/2);
+			}
+			&.pos1,&.pos4{
+				margin-right:@pad;
+			}
+			&.pos1,&.pos2,&.pos4,&.pos5{
+				.W(0.5,-@pad/2);.H(0.3,-@pad*2/3);
+			}
+		}
+	}
+	&.tmp3{
+		.cell{
+			float:left;
+			&.pos5{
+				.W();.H(0.4,-@pad/2);
+			}
+			&.pos1,&.pos3{
+				margin-right:@pad;
+			}
+			&.pos1,&.pos2,&.pos3,&.pos4{
+				margin-bottom:@pad;
+				.W(0.5,-@pad/2);.H(0.3,-@pad*2/3);
+			}
+		}
+	}
+}
+.len6{
+	&.tmp1{
+		.cell{
+			float:left;
+			&.pos1,&.pos2,&.pos3,&.pos4{
+				margin-bottom:@pad;
+			}
+			&.pos1,&.pos3,&.pos5{
+				margin-right:@pad;
+			}
+			&.pos1,&.pos2,&.pos3,&.pos4,&.pos5,&.pos6{
+				.W(0.5,-@pad/2);.H(1/3,-@pad*2/3);
+			}
+		}
+	}
+}
